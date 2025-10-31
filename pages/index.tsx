@@ -1,9 +1,10 @@
 // pages/index.tsx
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { HERO_BG, PRESET_FILTERS, PROPERTYLISTINGSAMPLE } from "@/constants";
 import Pill from "@/components/common/Pill";
 import PropertyCard from "@/components/common/PropertyCard";
 import type { PropertyProps } from "@/interfaces";
+import axios from "axios";
 
 const filterPredicate = (p: PropertyProps, active: Set<string>) => {
   if (active.size === 0) return true;
@@ -17,6 +18,8 @@ const filterPredicate = (p: PropertyProps, active: Set<string>) => {
 
 export default function HomePage() {
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const toggleFilter = (label: string) => {
     setActiveFilters((prev) => {
