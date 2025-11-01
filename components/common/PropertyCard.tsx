@@ -1,53 +1,57 @@
-import type { PropertyProps } from "@/interfaces";
+import Image from "next/image";
+import { Property } from "@/pages";
 
 type Props = {
-  item: PropertyProps;
+  property: Property;
 };
 
-const PropertyCard: React.FC<Props> = ({ item }) => {
-  const { name, rating, price, image, discount, address } = item;
-
-  const showDiscount = discount && discount.trim().length > 0;
-  const discountInt = showDiscount ? parseInt(discount, 10) : null;
+export default function PropertyCard({ property }: Props) {
+  const {
+    title,
+    price,
+    location,
+    imageUrl,
+    bedrooms,
+    bathrooms,
+    areaSqm,
+  } = property;
 
   return (
-    <article className="group overflow-hidden rounded-2xl transition hover:shadow-lg">
-      <div className="relative h-56 w-full overflow-hidden">
-        <img
-          src={image}
-          alt={name}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+    <article className="rounded-lg overflow-hidden border bg-white shadow-sm hover:shadow-md transition">
+      <div className="relative h-48 w-full">
+        {/* If using external domains, add them to next.config.js images.domains */}
+        <Image
+          src={imageUrl}
+          alt={title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+          priority={false}
         />
-        {showDiscount && (
-          <img
-            src="/assets/imgs/detail/discount-indicator.png"
-            alt={`${discountInt}% off`}
-            className="absolute left-0 top-2 h-10 w-20 select-none pointer-events-none"
-            draggable={false}
-          />
-        )}
       </div>
-      <div className="space-y-1 p-4">
-        <h3 className="line-clamp-1 text-lg font-semibold">{name}</h3>
-        <p className="text-sm text-gray-400">
-          {address.city}, {address.state}, {address.country}
+
+      <div className="p-4 space-y-2">
+        <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
+        <p className="text-sm text-gray-500 line-clamp-1">{location}</p>
+
+        <p className="text-base font-semibold">
+          {new Intl.NumberFormat(undefined, {
+            style: "currency",
+            currency: "USD",
+            maximumFractionDigits: 0,
+          }).format(price)}
         </p>
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center gap-2">
-            <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
-              ★ {rating.toFixed(2)}
-            </span>
-          </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">per night</div>
-            <div className="text-base font-semibold">
-              ${price.toLocaleString()}
-            </div>
-          </div>
+
+        <div className="flex items-center gap-4 text-sm text-gray-600">
+          {typeof bedrooms === "number" && <span>{bedrooms} bd</span>}
+          {typeof bathrooms === "number" && <span>{bathrooms} ba</span>}
+          {typeof areaSqm === "number" && <span>{areaSqm} m²</span>}
         </div>
+
+        <button className="w-full mt-2 rounded-md border px-4 py-2 text-sm font-medium hover:bg-gray-50">
+          View Details
+        </button>
       </div>
     </article>
   );
-};
-
-export default PropertyCard;
+}
